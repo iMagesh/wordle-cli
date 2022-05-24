@@ -1,5 +1,3 @@
-const { processScopeQueue } = require("nextgen-events");
-
 const terminal = require("terminal-kit").terminal;
 terminal("Guess the WORDLE in six tries\n");
 terminal(
@@ -17,43 +15,51 @@ const data = {
   guessedWords: [],
 };
 
-function drawTable() {
-  return terminal.table(
-    [
-      ["", "", "", "", ""],
-      ["", "", "", "", ""],
-      ["", "", "", "", ""],
-      ["", "", "", "", ""],
-      ["", "", "", "", ""],
-      ["", "", "", "", ""],
-    ],
-    {
-      hasBorder: true,
-      contentHasMarkup: true,
-      borderChars: "lightRounded",
-      borderAttr: { color: "grey" },
-      textAttr: { bgColor: "default" },
-      // firstCellTextAttr: { bgColor: "blue" },
-      // firstRowTextAttr: { bgColor: "yellow" },
-      // firstColumnTextAttr: { bgColor: "red" },
-      width: 30,
-      fit: true, // Activate all expand/shrink + wordWrap
+function buildRow() {
+  let defaultMatrix = [
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+    ["", "", "", "", ""],
+  ];
+  let emptyRow = ["", "", "", "", ""];
+  let matrix = [];
+  if (data.guessedWords.length === 0) {
+    matrix = defaultMatrix;
+  } else {
+    data.guessedWords.forEach((word) => {
+      matrix.push(word.split(""));
+    });
+    if (
+      data.guessedWords.length > 0 &&
+      data.guessedWords.length < data.totalChances
+    ) {
+      let num = data.totalChances - data.guessedWords.length;
+      for (let i = 0; i < num; i++) {
+        matrix.push(emptyRow);
+      }
     }
-  );
+  }
+  return drawTable(matrix);
 }
 
-// let correctLetters = [];
-// let correctLettersPos = [];
-drawTable();
-// let wordGuess = "";
-let chancesRemaining = 6;
+function drawTable(tableData) {
+  console.log("\n");
+  return terminal.table(tableData, {
+    hasBorder: true,
+    contentHasMarkup: true,
+    borderChars: "lightRounded",
+    borderAttr: { color: "grey" },
+    textAttr: { bgColor: "default" },
+    width: 30,
+    fit: true, // Activate all expand/shrink + wordWrap
+  });
+}
 
+buildRow();
 getWord();
-// if (chancesRemaining !== 0 || wordGuess === word) {
-//   wordGuess = getWord();
-//   checkWord(wordGuess);
-//   chancesRemaining = chancesRemaining - 1;
-// }
 
 async function getWord() {
   await terminal.inputField(function (error, wordGuess) {
@@ -64,7 +70,6 @@ async function getWord() {
     }
     checkWord(wordGuess);
   }).promise;
-  // return process.exit();
 }
 
 function storeWord(wordGuess) {
@@ -74,30 +79,34 @@ function storeWord(wordGuess) {
   }
 }
 
+function chancesOver() {
+  terminal.red("\nSorry you had only " + data.totalChances + " chances");
+  terminal.red("\nYou lost! The word was " + word);
+}
+
 async function checkWord(wordGuess) {
   let correctLetters = [];
   let correctLettersPos = [];
-  console.log(correctLetters);
+
   wordGuess = wordGuess.toUpperCase();
   if (data.elapsedChances === data.totalChances) {
-    terminal.red("Sorry you had only " + data.totalChances + " chances");
-    terminal.red("You lost! The word was " + word);
+    buildRow();
+    chancesOver();
     return process.exit();
   } else if (wordGuess.length !== 5) {
     terminal.bold.red("\nIt should be a 5 letter word\n");
     await getWord();
   } else if (wordGuess === word) {
     storeWord(wordGuess);
+    buildRow();
     terminal.bold.green("\nBingo! You guessed the word!\n");
     terminal.green("\nThe wordle was '%s'\n", wordGuess);
     process.exit();
   } else {
     storeWord(wordGuess);
+    buildRow();
     wordGuess.split("").forEach((letter, index) => {
-      console.log(letter);
-      // console.log(word);
       if (wordArr.includes(letter)) {
-        // console.log(letter);
         if (wordArr[index] === letter) {
           correctLettersPos.push(letter);
         } else {
@@ -107,13 +116,15 @@ async function checkWord(wordGuess) {
     });
 
     if (correctLetters?.length !== 5) {
-      terminal.bold.red("\n Wrong guess!\n");
-      console.log("Correct Position", correctLettersPos);
-      console.log("Correct but not in position", correctLetters);
-      await getWord();
+      terminal.bold.red("\nWrong guess!\n");
+      console.log("\nCorrect Position", correctLettersPos);
+      console.log("\nCorrect but not in position", correctLetters);
+      if (data.elapsedChances !== data.totalChances) {
+        await getWord();
+      } else {
+        chancesOver();
+      }
     }
-
-    // return wordGuess;
   }
   process.exit();
 }
