@@ -11,6 +11,12 @@ terminal(
 
 const word = "LOVER";
 const wordArr = word.split("");
+const data = {
+  totalChances: 6,
+  elapsedChances: 0,
+  guessedWords: [],
+};
+
 function drawTable() {
   return terminal.table(
     [
@@ -61,18 +67,32 @@ async function getWord() {
   // return process.exit();
 }
 
+function storeWord(wordGuess) {
+  data.elapsedChances = data.elapsedChances + 1;
+  if (!data.guessedWords.includes(wordGuess)) {
+    data.guessedWords.push(wordGuess);
+  }
+}
+
 async function checkWord(wordGuess) {
   let correctLetters = [];
   let correctLettersPos = [];
   console.log(correctLetters);
   wordGuess = wordGuess.toUpperCase();
-  if (wordGuess.length !== 5) {
+  if (data.elapsedChances === data.totalChances) {
+    terminal.red("Sorry you had only " + data.totalChances + " chances");
+    terminal.red("You lost! The word was " + word);
+    return process.exit();
+  } else if (wordGuess.length !== 5) {
     terminal.bold.red("\nIt should be a 5 letter word\n");
     await getWord();
   } else if (wordGuess === word) {
-    terminal.bold.green("\nExcellent! You guessed the word!\n");
+    storeWord(wordGuess);
+    terminal.bold.green("\nBingo! You guessed the word!\n");
+    terminal.green("\nThe wordle was '%s'\n", wordGuess);
     process.exit();
   } else {
+    storeWord(wordGuess);
     wordGuess.split("").forEach((letter, index) => {
       console.log(letter);
       // console.log(word);
@@ -85,15 +105,6 @@ async function checkWord(wordGuess) {
         }
       }
     });
-
-    if (correctLettersPos.length > 0) {
-      terminal.green("\nCorrect letters positions: %s\n", correctLettersPos);
-    }
-
-    if (correctLetters?.length === 5) {
-      terminal.bold.green("\nBingo! You guessed the word!\n");
-      terminal.green("\nThe wordle was '%s'\n", wordGuess);
-    }
 
     if (correctLetters?.length !== 5) {
       terminal.bold.red("\n Wrong guess!\n");
