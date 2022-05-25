@@ -1,3 +1,5 @@
+const axios = require("axios");
+
 const terminal = require("terminal-kit").terminal;
 terminal("Guess the WORDLE in six tries\n");
 terminal(
@@ -7,8 +9,19 @@ terminal(
   "After each guess, the color of the tiles will change to show how close your guess was to the word.\n"
 );
 
-const word = "LOVER";
-const wordArr = word.split("");
+let word = "";
+let wordArr = [];
+
+async function gWord() {
+  word = await fetchWord();
+  console.log(word);
+  word = word.toUpperCase();
+  wordArr = word.split("");
+  buildRow();
+  getWord();
+}
+gWord();
+
 const data = {
   totalChances: 6,
   elapsedChances: 0,
@@ -57,9 +70,6 @@ function drawTable(tableData) {
     fit: true, // Activate all expand/shrink + wordWrap
   });
 }
-
-buildRow();
-getWord();
 
 async function getWord() {
   await terminal.inputField(function (error, wordGuess) {
@@ -127,4 +137,12 @@ async function checkWord(wordGuess) {
     }
   }
   process.exit();
+}
+
+async function fetchWord() {
+  let response = await axios.get(
+    "https://api.datamuse.com/words?sp=?????&max=5"
+  );
+  let random = response.data[Math.floor(Math.random() * response.data.length)];
+  return random.word;
 }
