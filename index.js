@@ -14,7 +14,6 @@ let wordArr = [];
 
 async function gWord() {
   word = await fetchWord();
-  console.log(word);
   word = word.toUpperCase();
   wordArr = word.split("");
   buildRow();
@@ -141,7 +140,7 @@ async function checkWord(wordGuess) {
 
 async function fetchWord() {
   let response = await axios.get(
-    "https://api.datamuse.com/words?sp=?????&max=5"
+    "https://api.datamuse.com/words?sp=?????&max=15"
   );
   let random = response.data[Math.floor(Math.random() * response.data.length)];
   return random.word;
