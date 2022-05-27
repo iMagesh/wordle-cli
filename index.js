@@ -1,6 +1,15 @@
 const axios = require("axios");
-
 const terminal = require("terminal-kit").terminal;
+const _ = require("lodash");
+
+let word = "";
+let wordArr = [];
+const data = {
+  totalChances: 6,
+  elapsedChances: 0,
+  guessedWords: [],
+};
+
 terminal("Guess the WORDLE in six tries\n");
 terminal(
   "Each guess must be a valid five-letter word. Hit the enter button to submit.\n"
@@ -9,23 +18,16 @@ terminal(
   "After each guess, the color of the tiles will change to show how close your guess was to the word.\n"
 );
 
-let word = "";
-let wordArr = [];
-
 async function gWord() {
   word = await fetchWord();
+  // word = "issue";
   word = word.toUpperCase();
+  console.log(word);
   wordArr = word.split("");
   buildRow();
   getWord();
 }
 gWord();
-
-const data = {
-  totalChances: 6,
-  elapsedChances: 0,
-  guessedWords: [],
-};
 
 function buildRow() {
   let defaultMatrix = [
@@ -41,8 +43,8 @@ function buildRow() {
   if (data.guessedWords.length === 0) {
     matrix = defaultMatrix;
   } else {
-    data.guessedWords.forEach((word) => {
-      matrix.push(word.split(""));
+    data.guessedWords.forEach((guessedWord) => {
+      matrix.push(guessedWord.split(""));
     });
     if (
       data.guessedWords.length > 0 &&
@@ -114,13 +116,32 @@ async function checkWord(wordGuess) {
   } else {
     storeWord(wordGuess);
     buildRow();
+    // let letterOccurrencesInWord = _.countBy(word);
+
     wordGuess.split("").forEach((letter, index) => {
+      let combine = [...correctLetters, ...correctLettersPos];
       if (wordArr.includes(letter)) {
         if (wordArr[index] === letter) {
           correctLettersPos.push(letter);
         } else {
-          correctLetters.push(letter);
+          if (_.countBy(combine)[letter] !== _.countBy(wordArr)[letter]) {
+            console.log(correctLetters);
+            correctLetters.push(letter);
+          }
+          // correctLetters.push(letter);
         }
+      }
+    });
+
+    const countOccurences = _.countBy(correctLettersPos);
+    const letterOccurencesInWord = _.countBy(wordArr);
+
+    correctLetters = correctLetters.filter((letter) => {
+      if (
+        !correctLettersPos.includes(letter) ||
+        letterOccurencesInWord[letter] > countOccurences[letter]
+      ) {
+        return letter;
       }
     });
 
@@ -139,9 +160,15 @@ async function checkWord(wordGuess) {
 }
 
 async function fetchWord() {
-  let response = await axios.get(
-    "https://api.datamuse.com/words?sp=?????&max=15"
-  );
+  let response;
+  try {
+    response = await axios.get(
+      "https://api.datamuse.com/words?sp=?????&max=15"
+    );
+  } catch (error) {
+    console.log(error);
+    console.log("Something went wrong. Try again in few minutes");
+  }
   let random = response.data[Math.floor(Math.random() * response.data.length)];
   return random.word;
 }
