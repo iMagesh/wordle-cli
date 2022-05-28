@@ -20,17 +20,17 @@ terminal(
 
 async function gWord() {
   word = await fetchWord();
-  // word = "issue";
+  // word = "titty";
   word = word.toUpperCase();
-  console.log(word);
+  // console.log(word);
   wordArr = word.split("");
   buildRow();
-  getWord();
+  getInput();
 }
 gWord();
 
 function buildRow() {
-  let defaultMatrix = [
+  const defaultMatrix = [
     ["", "", "", "", ""],
     ["", "", "", "", ""],
     ["", "", "", "", ""],
@@ -38,7 +38,7 @@ function buildRow() {
     ["", "", "", "", ""],
     ["", "", "", "", ""],
   ];
-  let emptyRow = ["", "", "", "", ""];
+  const emptyRow = ["", "", "", "", ""];
   let matrix = [];
   if (data.guessedWords.length === 0) {
     matrix = defaultMatrix;
@@ -72,11 +72,10 @@ function drawTable(tableData) {
   });
 }
 
-async function getWord() {
+async function getInput() {
   await terminal.inputField(function (error, wordGuess) {
     if (error) {
       terminal.error(error);
-      console.log("error");
       return;
     }
     checkWord(wordGuess);
@@ -96,9 +95,6 @@ function chancesOver() {
 }
 
 async function checkWord(wordGuess) {
-  let correctLetters = [];
-  let correctLettersPos = [];
-
   wordGuess = wordGuess.toUpperCase();
   if (data.elapsedChances === data.totalChances) {
     buildRow();
@@ -106,7 +102,7 @@ async function checkWord(wordGuess) {
     return process.exit();
   } else if (wordGuess.length !== 5) {
     terminal.bold.red("\nIt should be a 5 letter word\n");
-    await getWord();
+    await getInput();
   } else if (wordGuess === word) {
     storeWord(wordGuess);
     buildRow();
@@ -116,47 +112,52 @@ async function checkWord(wordGuess) {
   } else {
     storeWord(wordGuess);
     buildRow();
-    // let letterOccurrencesInWord = _.countBy(word);
-
-    wordGuess.split("").forEach((letter, index) => {
-      let combine = [...correctLetters, ...correctLettersPos];
-      if (wordArr.includes(letter)) {
-        if (wordArr[index] === letter) {
-          correctLettersPos.push(letter);
-        } else {
-          if (_.countBy(combine)[letter] !== _.countBy(wordArr)[letter]) {
-            console.log(correctLetters);
-            correctLetters.push(letter);
-          }
-          // correctLetters.push(letter);
-        }
-      }
-    });
-
-    const countOccurences = _.countBy(correctLettersPos);
-    const letterOccurencesInWord = _.countBy(wordArr);
-
-    correctLetters = correctLetters.filter((letter) => {
-      if (
-        !correctLettersPos.includes(letter) ||
-        letterOccurencesInWord[letter] > countOccurences[letter]
-      ) {
-        return letter;
-      }
-    });
-
-    if (correctLetters?.length !== 5) {
-      terminal.bold.red("\nWrong guess!\n");
-      console.log("\nCorrect Position", correctLettersPos);
-      console.log("\nCorrect but not in position", correctLetters);
-      if (data.elapsedChances !== data.totalChances) {
-        await getWord();
-      } else {
-        chancesOver();
-      }
-    }
+    await handleWordGuess(wordGuess);
   }
   process.exit();
+}
+
+async function handleWordGuess(wordGuess) {
+  let correctLetters = [];
+  let correctLettersPos = [];
+  wordGuess.split("").forEach((letter, index) => {
+    let combine = [...correctLetters, ...correctLettersPos];
+    if (wordArr.includes(letter)) {
+      if (wordArr[index] === letter) {
+        correctLettersPos.push(letter);
+      } else {
+        if (_.countBy(combine)[letter] !== _.countBy(wordArr)[letter]) {
+          correctLetters.push(letter);
+        }
+      }
+    }
+  });
+
+  const countOccurences = _.countBy(correctLettersPos);
+  const letterOccurencesInWord = _.countBy(wordArr);
+
+  correctLetters = correctLetters.filter((letter) => {
+    if (
+      !correctLettersPos.includes(letter) ||
+      letterOccurencesInWord[letter] > countOccurences[letter]
+    ) {
+      return letter;
+    }
+  });
+  await handleWrongGuess(correctLetters, correctLettersPos);
+}
+
+async function handleWrongGuess(correctLetters, correctLettersPos) {
+  if (correctLetters?.length !== 5) {
+    terminal.bold.red("\nWrong guess!\n");
+    console.log("\nCorrect Position", correctLettersPos);
+    console.log("\nCorrect but not in position", correctLetters);
+    if (data.elapsedChances !== data.totalChances) {
+      await getInput();
+    } else {
+      chancesOver();
+    }
+  }
 }
 
 async function fetchWord() {
