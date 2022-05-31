@@ -10,24 +10,31 @@ const data = {
   guessedWords: [],
 };
 
-terminal("Guess the WORDLE in six tries\n");
-terminal(
-  "Each guess must be a valid five-letter word. Hit the enter button to submit.\n"
-);
-terminal(
-  "After each guess, the color of the tiles will change to show how close your guess was to the word.\n"
-);
+function startGame() {
+  terminal("Guess the WORDLE in six tries\n");
+  terminal(
+    "Each guess must be a valid five-letter word. \nHit the enter button to submit.\n"
+  );
+  terminal(
+    "After each guess, the color of the tiles will change to show how close your guess was to the word.\n"
+  );
+}
 
 async function gWord() {
   word = await fetchWord();
-  // word = "titty";
+  // word = "sittt";
   word = word.toUpperCase();
   // console.log(word);
   wordArr = word.split("");
   buildRow();
   getInput();
 }
-gWord();
+
+// Calls the methods only when run through command line
+if (require.main === module) {
+  startGame();
+  gWord();
+}
 
 function buildRow() {
   const defaultMatrix = [
@@ -150,8 +157,10 @@ async function handleWordGuess(wordGuess) {
 async function handleWrongGuess(correctLetters, correctLettersPos) {
   if (correctLetters?.length !== 5) {
     terminal.bold.red("\nWrong guess!\n");
-    console.log("\nCorrect Position", correctLettersPos);
-    console.log("\nCorrect but not in position", correctLetters);
+    correctLettersPos.length > 0 &&
+      console.log("\nCorrect Position", correctLettersPos);
+    correctLetters.length > 0 &&
+      console.log("\nCorrect but not in position", correctLetters);
     if (data.elapsedChances !== data.totalChances) {
       await getInput();
     } else {
@@ -173,3 +182,18 @@ async function fetchWord() {
   let random = response.data[Math.floor(Math.random() * response.data.length)];
   return random.word;
 }
+
+module.exports = {
+  data,
+  startGame,
+  gWord,
+  buildRow,
+  drawTable,
+  getInput,
+  checkWord,
+  storeWord,
+  chancesOver,
+  handleWordGuess,
+  handleWrongGuess,
+  fetchWord,
+};
