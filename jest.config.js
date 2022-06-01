@@ -3,13 +3,14 @@
 const config = {
   verbose: true,
   testEnvironment: "node",
+  testTimeout: 10000,
 };
 
 module.exports = config;
 
 // Or async function
-module.exports = async () => {
-  return {
-    verbose: true,
-  };
-};
+// module.exports = async () => {
+//   return {
+//     verbose: true,
+//   };
+// };
