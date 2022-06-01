@@ -1,4 +1,4 @@
-const { fetchWord, data, checkWord } = require("../index");
+const { fetchWord, data, checkWord } = require("../lib/index");
 
 describe("fetch word", () => {
   beforeAll(async () => {
@@ -31,13 +31,14 @@ describe("check word", () => {
 });
 
 describe("there should not be any repeat words", () => {
-  test("word should not be repeated", async () => {
-    let words = [];
+  beforeAll(async () => {
+    words = [];
     for (let i = 0; i < 10; i++) {
       let randWord = await fetchWord();
       words.push(randWord);
     }
-    console.log(words);
+  });
+  test("word should not be repeated", async () => {
     expect(new Set(words).size).toBe(words.length);
   });
 });

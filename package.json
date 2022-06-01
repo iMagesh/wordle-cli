@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "wordle": "node --experimental-vm-modules index.js",
-    "test": "jest --watchAll"
+    "wordle": "node --experimental-vm-modules lib/index.js",
+    "test:watch": "jest --watchAll",
+    "test": "jest --coverage --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
