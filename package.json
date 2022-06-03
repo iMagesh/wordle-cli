@@ -12,9 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ascii-table": "^0.0.9",
     "axios": "^0.27.2",
-    "chalk": "^5.0.1",
+    "chalk": "^4.1.2",
     "lodash": "^4.17.21",
+    "table": "^6.8.0",
     "terminal-kit": "^2.4.0"
   },
   "devDependencies": {
