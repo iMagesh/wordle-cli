@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "wordle": "node --experimental-vm-modules lib/index.js",
+    "wordle": "node --experimental-vm-modules --trace-warnings lib/index.js",
     "test:watch": "jest --watchAll",
     "test": "jest --coverage --detectOpenHandles"
   },
