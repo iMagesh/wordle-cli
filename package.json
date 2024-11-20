@@ -1,15 +1,16 @@
 {
-  "name": "wordle-cli",
+  "name": "wordle-cli-js",
   "version": "1.0.0",
-  "description": "",
+  "description": "a commandline game based on wordle online that was trending recently",
   "main": "index.js",
+  "repository": "https://github.com/imagesh/wordle-cli",
   "scripts": {
     "wordle": "node --experimental-vm-modules --trace-warnings lib/index.js",
     "test:watch": "jest --watchAll",
     "test": "jest --coverage --detectOpenHandles"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["wordle", "nodejs", "javascript", "cli game"],
+  "author": "Magesh <pingmagesh@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "ascii-table": "^0.0.9",
