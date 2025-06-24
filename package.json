@@ -9,7 +9,12 @@
     "test:watch": "jest --watchAll",
     "test": "jest --coverage --detectOpenHandles"
   },
-  "keywords": ["wordle", "nodejs", "javascript", "cli game"],
+  "keywords": [
+    "wordle",
+    "nodejs",
+    "javascript",
+    "cli game"
+  ],
   "author": "Magesh <pingmagesh@gmail.com>",
   "license": "ISC",
   "dependencies": {
