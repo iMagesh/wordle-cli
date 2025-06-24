@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "repository": "https://github.com/imagesh/wordle-cli",
   "scripts": {
-    "wordle": "node --experimental-vm-modules --trace-warnings lib/index.js",
+    "start": "node --experimental-vm-modules --trace-warnings lib/index.js",
     "test:watch": "jest --watchAll",
     "test": "jest --coverage --detectOpenHandles"
   },
