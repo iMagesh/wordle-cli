@@ -2,7 +2,7 @@
   "name": "wordle-cli-js",
   "version": "1.0.0",
   "description": "a commandline game based on wordle online that was trending recently",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": "https://github.com/imagesh/wordle-cli",
   "scripts": {
     "wordle": "node --experimental-vm-modules --trace-warnings lib/index.js",
