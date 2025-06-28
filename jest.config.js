@@ -4,6 +4,7 @@ const config = {
   verbose: true,
   testEnvironment: "node",
   testTimeout: 10000,
+  setupFilesAfterEnv: ["<rootDir>/tests/setupTests.js"],
 };
 
 module.exports = config;
