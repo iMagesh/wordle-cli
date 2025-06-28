@@ -56,6 +56,10 @@ npm run test
 
 The test suite covers core logic, edge cases, and user-facing output.
 
+## Test Suite Organization
+
+See [TESTING.md](./TESTING.md) for details on the test suite structure and what each test file covers.
+
 ## License
 
 MIT
