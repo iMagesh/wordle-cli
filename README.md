@@ -3,10 +3,30 @@
 Wordle cli game is for the CLI enthusiasts. Using this code you can play the trending game Wordle from within your terminal console. I built this for fun.
 Feel free to suggest improvements or add issues in the issues tab.
 
+## Installation
+
+You can install the latest version globally from npm:
+
+```bash
+npm install -g wordle-cli-js
+```
+
+Then run the game from anywhere with:
+
+```bash
+wordle-cli-js
+```
+
+Or, to use as a project dependency:
+
+```bash
+npm install wordle-cli-js
+```
+
 ## Features
 
 - Play Wordle in your terminal
-- Random 5-letter word fetched from an online API
+- Random 5-letter word fetched from an online API, with a robust local fallback word list (works offline)
 - Colored feedback for correct, misplaced, and incorrect letters
 - Handles edge cases and errors gracefully
 - Well-tested with comprehensive test coverage

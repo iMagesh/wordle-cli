@@ -1,8 +1,11 @@
 {
   "name": "wordle-cli-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "a commandline game based on wordle online that was trending recently",
   "main": "lib/index.js",
+  "bin": {
+    "wordle": "lib/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imagesh/wordle-cli.git"
