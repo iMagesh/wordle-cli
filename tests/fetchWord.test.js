@@ -2,6 +2,10 @@
 const axios = require('axios');
 jest.mock('axios');
 const { fetchWord } = require("../lib/fetchWord");
+const fs = require("fs");
+const path = require("path");
+const wordsPath = path.join(__dirname, "../lib/words.json");
+const localWords = JSON.parse(fs.readFileSync(wordsPath, "utf8"));
 
 describe("fetchWord", () => {
   beforeEach(() => {
@@ -34,20 +38,20 @@ describe("fetchWord", () => {
   test("returns fallback word if API returns empty array", async () => {
     axios.get.mockResolvedValue({ data: [] });
     const word = await fetchWord();
-    expect(word).toBe("apple");
+    expect(localWords).toContain(word);
   });
 
   test("returns fallback word if API throws error", async () => {
     axios.get.mockImplementation(() => { throw new Error("fail"); });
     const word = await fetchWord();
-    expect(word).toBe("apple");
+    expect(localWords).toContain(word);
   });
 
   test("logs error and fallback message if axios throws", async () => {
     axios.get.mockImplementation(() => { throw new Error("fail"); });
     const logSpy = jest.spyOn(console, "log");
     const word = await fetchWord();
-    expect(word).toBe("apple");
+    expect(localWords).toContain(word);
     expect(logSpy).toHaveBeenCalledWith(expect.any(Error));
     expect(logSpy).toHaveBeenCalledWith("Something went wrong. Try again in few minutes");
     logSpy.mockRestore();
@@ -62,6 +66,24 @@ describe("fetchWord", () => {
   test("handles malformed API data (missing word property)", async () => {
     axios.get.mockResolvedValue({ data: [{ notword: "XXXXX" }] });
     const word = await fetchWord();
-    expect(word).toBe("apple");
+    expect(localWords).toContain(word);
+  });
+
+  test("returns a local fallback word if API fails and local list is present", async () => {
+    axios.get.mockImplementation(() => { throw new Error("fail"); });
+    // Remove apple from the local list to ensure randomness
+    jest.resetModules();
+    const fs = require("fs");
+    const path = require("path");
+    const wordsPath = path.join(__dirname, "../lib/words.json");
+    const words = JSON.parse(fs.readFileSync(wordsPath, "utf8"));
+    // Remove 'apple' if present
+    const filtered = words.filter(w => w !== "apple");
+    fs.writeFileSync(wordsPath, JSON.stringify(filtered));
+    const { fetchWord } = require("../lib/fetchWord");
+    const word = await fetchWord();
+    expect(filtered).toContain(word);
+    // Restore original list
+    fs.writeFileSync(wordsPath, JSON.stringify(words));
   });
 });
