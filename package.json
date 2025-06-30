@@ -1,6 +1,6 @@
 {
   "name": "wordle-cli-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a commandline game based on wordle online that was trending recently",
   "main": "lib/index.js",
   "bin": {
