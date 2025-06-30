@@ -14,7 +14,7 @@ npm install -g wordle-cli-js
 Then run the game from anywhere with:
 
 ```bash
-wordle-cli-js
+wordle
 ```
 
 Or, to use as a project dependency:
